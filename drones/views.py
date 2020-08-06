@@ -14,7 +14,9 @@ from drones.serializers import PilotCompetitionSerializer
 from django_filters import FilterSet, AllValuesFilter, DateTimeFilter, NumberFilter
 from rest_framework import permissions
 from drones import custompermission
-
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.throttling import ScopedRateThrottle
 
 class DroneCategoryList(generics.ListCreateAPIView):
     queryset = DroneCategory.objects.all()
@@ -47,6 +49,8 @@ class DroneCategoryDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class DroneList(generics.ListCreateAPIView):
+    throttle_scope = 'drones'
+    throttle_classes = (ScopedRateThrottle,)
     queryset = Drone.objects.all()
     serializer_class = DroneSerializer
     name = 'drone-list'
@@ -73,6 +77,8 @@ class DroneList(generics.ListCreateAPIView):
 
 
 class DroneDetail(generics.RetrieveUpdateDestroyAPIView):
+    throttle_scope = 'drones'
+    throttle_classes = (ScopedRateThrottle,)
     queryset = Drone.objects.all()
     serializer_class = DroneSerializer
     name = 'drone-detail'
@@ -83,6 +89,8 @@ class DroneDetail(generics.RetrieveUpdateDestroyAPIView):
  
 
 class PilotList(generics.ListCreateAPIView):
+    throttle_scope = 'pilots'
+    throttle_classes = (ScopedRateThrottle,)
     queryset = Pilot.objects.all()
     serializer_class = PilotSerializer
     name = 'pilot-list'
@@ -98,12 +106,27 @@ class PilotList(generics.ListCreateAPIView):
         'name',
         'races_count'
         )
+    authentication_classes=(
+        TokenAuthentication,
+    )
+    permission_classes=(
+        IsAuthenticated,
+    )
+    # token 9ccb703c4e15721245dfe2a5cee1bb97bcf00581
 
 
 class PilotDetail(generics.RetrieveUpdateDestroyAPIView):
+    throttle_scope = 'pilots'
+    throttle_classes = (ScopedRateThrottle,)
     queryset = Pilot.objects.all()
     serializer_class = PilotSerializer
     name = 'pilot-detail'
+    authentication_classes=(
+        TokenAuthentication,
+    )
+    permission_classes=(
+        IsAuthenticated,
+    )
 
 
 class CompetitionFilter(FilterSet): 
